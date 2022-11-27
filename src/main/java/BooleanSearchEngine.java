@@ -34,20 +34,20 @@ public class BooleanSearchEngine implements SearchEngine {
                     freqs.put(word, freqs.getOrDefault(word, 0) + 1);
                 }
 
-                int count;
                 for (var word : freqs.keySet()) {
                     if (word.isEmpty()) {
                         continue;
                     }
-                    count = freqs.get(word);
-                    List<PageEntry> listPageEntry = new ArrayList<>();
-                    listPageEntry.add(new PageEntry(pdf.getName(), i + 1, count));
+
+                    List<PageEntry> listPageEntry = new ArrayList<>();                   
 
                     if (answer.containsKey(word)) {
-                        answer.get(word).add(new PageEntry(pdf.getName(), i + 1, count));
+                        answer.get(word).add(new PageEntry(pdf.getName(), i + 1, freqs.get(word)));
                     } else {
+                        listPageEntry.add(new PageEntry(pdf.getName(), i + 1, freqs.get(word)));
                         answer.put(word, listPageEntry);
                     }
+                    answer.get(word).sort(Collections.reverseOrder());
                 }
             }
         }
@@ -55,13 +55,6 @@ public class BooleanSearchEngine implements SearchEngine {
 
     @Override
     public List<PageEntry> search(String word) {
-        List<PageEntry> searchList = new ArrayList<>();
-        for (PageEntry pageEntry : answer.get(word)) {
-            if (answer.containsKey(word.toLowerCase())) {
-                searchList.add(pageEntry);
-            }
-        }
-        Collections.sort(searchList);
-        return searchList;
+        return answer.get(word.toLowerCase());
     }
 }
